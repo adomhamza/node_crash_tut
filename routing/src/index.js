@@ -1,8 +1,11 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
+const DB = fs.readFileSync("./db.json", "utf-8");
+const data = JSON.parse(DB);
 const querystring = require("querystring");
-let db = {};
+const bodyParser = require("body-parser");
+let db;
 function readFile(path) {
   fs.readFile(path, "utf8", (err, data) => {
     if (err) {
@@ -21,39 +24,51 @@ const server = http.createServer(async (req, res) => {
   const reqPath = reqUrl.pathname;
   const reqQuery = reqUrl.query;
 
-  if (req.method === "GET" && reqPath === "/data") {
-    // Handle GET request to /data
+  if (req.method === "GET") {
+    // Handle GET request
     res.writeHead(200, { "Content-Type": "application/json" });
 
     let user = db?.users?.find((e) => e.id === reqQuery.id);
     const message = user ? "User found" : "User not found";
     const responseData = { user, message };
     res.end(JSON.stringify(responseData));
-  } else if (req.method === "PUT" && reqPath === "/data") {
-    // Handle PUT request to /data
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
+  } else if (req.method === "PUT" && reqPath === "/update")
+    bodyParser.json()(req, res, () => {
+      // Handle PUT request
+      const { id, name } = req.body;
+      // console.log(req.body);
+
+      const users = db.users;
+      console.log(users);
+      const userToUpdate = users.find((user) => user.id === id);
+      if (userToUpdate) {
+        userToUpdate.name = name;
+        const responseData = { message: "User update successful" };
+        res.end(JSON.stringify(responseData));
+        const newDB = { ...db };
+        newDB["users"] = users;
+        fs.writeFile(
+          "db.json",
+          JSON.stringify(newDB),
+          { flag: "w+" },
+          (err) => {
+            if (err) {
+              const responseData = { message: "User update unsuccessful" };
+              res.end(JSON.stringify(responseData));
+              return;
+            }
+            console.log("File written successfully!");
+            const responseData = { message: "User update successful" };
+            res.end(JSON.stringify(responseData));
+          }
+        );
+      } else {
+        console.log(`User with ID ${id} not found.`);
+        const responseData = { message: "User update unsuccessful" };
+        res.end(JSON.stringify(responseData));
+      }
     });
-    req.on("end", () => {
-      const putData = querystring.parse(body);
-      console.log("PUT data:", putData);
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end(`Received PUT data: ${JSON.stringify(putData)}`);
-    });
-  } else if (req.method === "POST" && reqPath === "/data") {
-    // Handle POST request to /data
-    let body = "";
-    req.on("data", (chunk) => {
-      body += chunk.toString();
-    });
-    req.on("end", () => {
-      const postData = querystring.parse(body);
-      console.log("POST data:", postData);
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end(`Received POST data: ${JSON.stringify(postData)}`);
-    });
-  } else {
+  else {
     // Handle 404 Not Found error
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("404 Not Found");
