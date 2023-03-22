@@ -36,10 +36,9 @@ const server = http.createServer(async (req, res) => {
     bodyParser.json()(req, res, () => {
       // Handle PUT request
       const { id, name } = req.body;
-      // console.log(req.body);
 
       const users = db.users;
-      console.log(users);
+
       const userToUpdate = users.find((user) => user.id === id);
       if (userToUpdate) {
         userToUpdate.name = name;
