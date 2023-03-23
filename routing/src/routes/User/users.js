@@ -1,16 +1,14 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
-// const DB = fs.readFileSync("./db.json", "utf-8");
-// const data = JSON.parse(DB);
-const querystring = require("querystring");
 const bodyParser = require("body-parser");
-let db;
+
+let db = {};
 function readFile(path) {
   fs.readFile(path, "utf8", (err, data) => {
     if (err) {
       console.error(err);
-      // return null;
+      return null;
     }
     const jsonData = JSON.parse(data);
     console.log(jsonData);
@@ -24,7 +22,7 @@ const server = http.createServer(async (req, res) => {
   const reqPath = reqUrl.pathname;
   const reqQuery = reqUrl.query;
 
-  if (req.method === "GET") {
+  if (req.method === "GET" && reqPath === "/user") {
     // Handle GET request
     res.writeHead(200, { "Content-Type": "application/json" });
 
@@ -32,18 +30,20 @@ const server = http.createServer(async (req, res) => {
     const message = user ? "User found" : "User not found";
     const responseData = { user, message };
     res.end(JSON.stringify(responseData));
-  } else if (req.method === "PUT" && reqPath === "/update")
+  } else if (req.method === "PUT" && reqPath === "/user/update") {
     bodyParser.json()(req, res, () => {
       // Handle PUT request
-      const { id, name } = req.body;
+      const { id, name, age } = req.body;
 
       const users = db.users;
 
       const userToUpdate = users.find((user) => user.id === id);
       if (userToUpdate) {
         userToUpdate.name = name;
-        const responseData = { message: "User update Successful" };
-        res.end(JSON.stringify(responseData));
+        userToUpdate.age = age;
+
+        console.log(userToUpdate);
+        // res.end(JSON.stringify({ userToUpdate, message }));
         const newDB = { ...db };
         newDB["users"] = users;
         fs.writeFile(
@@ -56,11 +56,11 @@ const server = http.createServer(async (req, res) => {
               res.end(JSON.stringify(responseData));
               return;
             }
-            // console.log("File written successfully!");
-            // const responseData = { message: "User update successful" };
-            // res.end(JSON.stringify(responseData));
+            console.log("File written successfully!");
           }
         );
+        const message = "User updated successfully";
+        res.end(JSON.stringify({ userToUpdate, message }));
         readFile("./db.json");
       } else {
         console.log(`User with ID ${id} not found.`);
@@ -68,7 +68,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify(responseData));
       }
     });
-  else if (req.method === "POST" && reqPath === "/add") {
+  } else if (req.method === "POST" && reqPath === "/user/add") {
     bodyParser.json()(req, res, () => {
       const { id, name, age } = req.body;
       const userToInsert = {
@@ -107,3 +107,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
+
+module.exports = { readFile };
