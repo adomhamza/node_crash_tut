@@ -1,8 +1,8 @@
 const http = require("http");
 const fs = require("fs");
 const url = require("url");
-const DB = fs.readFileSync("./db.json", "utf-8");
-const data = JSON.parse(DB);
+// const DB = fs.readFileSync("./db.json", "utf-8");
+// const data = JSON.parse(DB);
 const querystring = require("querystring");
 const bodyParser = require("body-parser");
 let db;
@@ -42,7 +42,7 @@ const server = http.createServer(async (req, res) => {
       const userToUpdate = users.find((user) => user.id === id);
       if (userToUpdate) {
         userToUpdate.name = name;
-        const responseData = { message: "User update successful" };
+        const responseData = { message: "User update Successful" };
         res.end(JSON.stringify(responseData));
         const newDB = { ...db };
         newDB["users"] = users;
@@ -56,18 +56,48 @@ const server = http.createServer(async (req, res) => {
               res.end(JSON.stringify(responseData));
               return;
             }
-            console.log("File written successfully!");
-            const responseData = { message: "User update successful" };
-            res.end(JSON.stringify(responseData));
+            // console.log("File written successfully!");
+            // const responseData = { message: "User update successful" };
+            // res.end(JSON.stringify(responseData));
           }
         );
+        readFile("./db.json");
       } else {
         console.log(`User with ID ${id} not found.`);
         const responseData = { message: "User update unsuccessful" };
         res.end(JSON.stringify(responseData));
       }
     });
-  else {
+  else if (req.method === "POST" && reqPath === "/add") {
+    bodyParser.json()(req, res, () => {
+      const { id, name, age } = req.body;
+      const userToInsert = {
+        id: id,
+        name: name,
+        age: age,
+      };
+      const userExists = db.users.find((user) => user.name === name);
+      if (userExists) {
+        const responseData = { message: "User already exists." };
+        res.end(JSON.stringify(responseData));
+        return;
+      }
+      db.users.push(userToInsert);
+      console.log(db);
+      res.end(JSON.stringify(db));
+      fs.writeFile("db.json", JSON.stringify(db), { flag: "w+" }, (err) => {
+        if (err) {
+          const responseData = { message: "User update unsuccessful" };
+          res.end(JSON.stringify(responseData));
+          return;
+        }
+        // console.log("File written successfully!");
+        // const responseData = { message: "User update successful" };
+        // res.end(JSON.stringify(responseData));
+      });
+      readFile("./db.json");
+    });
+  } else {
     // Handle 404 Not Found error
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("404 Not Found");
