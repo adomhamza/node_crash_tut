@@ -28,7 +28,7 @@ const server = http.createServer(async (req, res) => {
         id,
         topic,
         content,
-        comment,
+        comment: comment ?? [],
       };
       const userExists = db.blogs.find((user) => user.id === id);
       if (userExists) {
