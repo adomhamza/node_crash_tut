@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "id": "09d53905-146a-4e65-8788-a78faf7c0e53",
+      "name": "hamza",
+      "age": 34,
+      "blogs": [{ "id": "90", "topic": "sd", "content": 21, "comment": [] }]
+    },
+    {
+      "id": "85f378f0-3aff-4b85-be7a-045f516a8d45",
+      "name": "Hamza",
+      "age": 23
+    },
+    {
+      "id": "d2f5785f-5bb5-4fbb-b723-8e707a9b5d1e",
+      "name": "Hamzax",
+      "age": 203
+    },
+    {
+      "id": "781a2b25-4d1b-4e96-8693-3d51f4cad054",
+      "name": "Hamza Adom",
+      "age": 30
+    },
+    {
+      "id": "03eb24cf-7703-4804-9c80-dd25465ded19",
+      "name": "adoms",
+      "age": 31,
+      "blogs": ["hamza", "adom"]
+    },
+    {
+      "id": "967e8145-e794-4230-be36-41c55119da7c",
+      "name": "new name",
+      "age": 34,
+      "blogs": []
+    },
+    {
+      "id": "e7c555aa-d11d-445b-89e2-433cad7a9a3a",
+      "name": "new name",
+      "age": 34,
+      "blogs": []
+    }
+  ]
+}

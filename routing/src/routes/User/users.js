@@ -2,6 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 const bodyParser = require("body-parser");
+const {} = require("");
 
 let db = {};
 function readFile(path) {
@@ -17,12 +18,16 @@ function readFile(path) {
   });
 }
 readFile("./db.json");
+const PORT = process.env.PORT || 3000;
 const server = http.createServer(async (req, res) => {
   const reqUrl = url.parse(req.url, true);
   const reqPath = reqUrl.pathname;
   const reqQuery = reqUrl.query;
+  console.log(reqUrl);
+  console.log(req.url);
+  console.log(reqPath);
 
-  if (req.method === "GET" && reqPath === "/user") {
+  if (req.method === "GET" && reqUrl.pathname === "/user") {
     // Handle GET request
     res.writeHead(200, { "Content-Type": "application/json" });
 
@@ -104,7 +109,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(3000, () => {
+server.listen(PORT, () => {
   console.log("Server listening on port 3000");
 });
 
