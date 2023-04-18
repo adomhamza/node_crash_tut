@@ -1,7 +1,7 @@
 {
-  "name": "node_routing_tutorial",
+  "name": "node_express_tutorial",
   "version": "1.0.0",
-  "description": "A tutorial to learn routing in node.js",
+  "description": "A tutorial to learn express",
   "author": "Adom Hamza",
   "main": "server.js",
   "license": "MIT",
@@ -11,6 +11,8 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
-    "uuid": "^9.0.0"
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^2.0.22"
   }
 }
